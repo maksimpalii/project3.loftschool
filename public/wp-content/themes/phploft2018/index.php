@@ -5,14 +5,21 @@
             <div class="posts-list">
                 <?php
 
-                 $posts = query_posts(['post_type' => ['news', 'akcia', 'post']]);
+                /* $posts = query_posts(['post_type' => ['news', 'akcia', 'post']]);*/
+                $the_query = new WP_Query(array('posts_per_page' => 10,
+                        'post_type' => ['news', 'akcia'],
+                        'paged' => get_query_var('paged') ? get_query_var('paged') : 1)
+                );
 
                 ?>
-                <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+                <?/*php if (have_posts()) : while (have_posts()) : the_post();*/ ?>
+                <?php if (have_posts()) : while ($the_query -> have_posts()) : $the_query -> the_post(); ?>
                     <div class="post-wrap">
                         <div>
-                            <?php if (get_post_type() === 'akcia') {
-                                echo 'AKCIA';
+                            <?php if (get_post_type() === 'news') {
+                                echo 'news';
+                            } elseif (get_post_type() === 'akcia') {
+                                echo 'akcia';
                             }
                             ?>
                         </div>
@@ -39,11 +46,14 @@
                             </div>
                         </div>
                     </div>
-                <?php endwhile; else: ?>
+                    <?php
+                endwhile;
+                else : ?>
                     <p><?php _e('Ничего не найдено.'); ?></p>
                 <?php endif; ?>
             </div>
             <div class="pagenavi-post-wrap">
+
                 <?php
                 the_posts_pagination(array(
                     'prev_next' => true,
@@ -52,7 +62,8 @@
                     'screen_reader_text' => __(' '),
                 ));
                 ?>
-                <?php wp_reset_query(); wp_reset_postdata(); ?>
+                <?php wp_reset_query();
+                wp_reset_postdata(); ?>
             </div>
         </div>
         <!-- sidebar-->
